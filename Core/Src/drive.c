@@ -33,6 +33,30 @@ void executeGComand(struct driversComand comand){
 	if(comand.valid & (1<<3)){//если подача валидна,
 		lastF = comand.F;//то запоминаем её. В следующей команде подачи может не быть
 	}
+
+	//заполняем невалидные параметры текущими значениями
+	if(!(comand.valid & (1<<0))){
+		comand.posX = positionX;
+	}
+	if(!(comand.valid & (1<<1))){
+		comand.posX = positionY;
+	}
+	if(!(comand.valid & (1<<2))){
+		comand.posX = positionZ;
+	}
+	if(comand.valid & (1<<5)){//если I валидна, то преобразуем ее в абсолютные координаты
+		comand.I = positionX + comand.I;
+	}
+	else{
+		comand.I = positionX;//иначе просто присваиваем позицию Х
+	}
+	if(comand.valid & (1<<6)){//если J валидна, то преобразуем ее в абсолютные координаты
+		comand.J = positionY + comand.J;
+	}
+	else{
+		comand.J = positionY;//иначе просто присваиваем позицию Y
+	}
+
 	//одно прерывание таймера = 0.000 025 С
 	float F=(float)lastF/100;
 	float periodPerStep=1/(1/F/200);
@@ -72,40 +96,30 @@ void executeGComand(struct driversComand comand){
 			//в первом случае координатами центра считаем центр хорды
 
 			if(comand.valid & (1<<4)){//если строим через радиус
-				//находим середину хорды
-				int dX = positionX - comand.posX;
-				int dY = positionY - comand.posY;
 
 			}
 			else{//если через координаты центра
-				if(comand.valid & (1<<5)){//если I валидна
-
-				}
-				if(comand.valid & (1<<6)){//если J валидна
-
-				}
+				//получаем относительные координаты начальной точки интерполятора
+				vPosX = positionX - comand.I;
+				vPosY = positionY - comand.J;
 			}
-
-
-
-
-
-
-			//находим половину длины хорды
-			int d = sqrt((dX * dX) + (dY * dY));
-			//находим длину перпендикуляра к хорде
-			int n = sqrt((comand.R * comand.R) + (d * d));
 
 			calcInterpolation();
 			break;
 		}
 		case(3):{//круговая интерполяция против часовой стрелки
-			//находим длину хорды
-			int a = positionX - comand.posX;
-			int b = positionY - comand.posY;
-			int d = abs(sqrt((a * a) + (b * b)));
-			vPosX=0;
-			vPosY=d/2;//половина хорды
+			//есть два варианта команды:через радиус или через координаты центра
+			//в первом случае координатами центра считаем центр хорды
+
+			if(comand.valid & (1<<4)){//если строим через радиус
+
+			}
+			else{//если через координаты центра
+				//получаем относительные координаты начальной точки интерполятора
+				vPosX = positionX - comand.I;
+				vPosY = positionY - comand.J;
+			}
+
 			calcInterpolation();
 			break;
 		}
@@ -119,16 +133,8 @@ void executeGComand(struct driversComand comand){
 }
 ////////////////////////////////////////////////////////////////////////////////////////
 void calcInterpolation(){
-	int tmpX=positionX;
-	int tmpY=positionY;
-	if(!(currentComand.valid & (1<<0))){//если X не валидна
-		tmpX = currentComand.posX;//то не сравниваем
-	}
-	if(!(currentComand.valid & (1<<1))){//если Y не валидна
-		tmpY = currentComand.posY;//то не сравниваем
-	}
 
-	if((tmpX == currentComand.posX) && (tmpY == currentComand.posY)){//если пришли в заданную позицию, то ничего не делаем
+	if((positionX == currentComand.posX) && (positionY == currentComand.posY)){//если пришли в заданную позицию, то ничего не делаем
 		vPosX=0;
 		vPosY=0;
 		return;
@@ -250,23 +256,23 @@ void cwCicleInterpolation(){
 	if(F >= 0){//если на окружности или за ней
 
 		if((vPosX > 0) && (vPosY > 0)){//1 квадрант
-			stepsCounterY = 1;
+			stepsCounterY = -1;
 		}
 		else if((vPosX > 0) && (vPosY < 0)){//2 квадрант
 			stepsCounterX = -1;
 		}
 		else if((vPosX < 0) && (vPosY < 0)){//3 квадрант
-			stepsCounterY = -1;
+			stepsCounterY = 1;
 		}
 		else if((vPosX < 0) && (vPosY > 0)){//4 квадрант
 			stepsCounterX = 1;
 		}
 		else{
 			if(vPosY > 0){
-				stepsCounterY = 1;//должен быть -, но инвертировано для привода
+				stepsCounterY = -1;
 			}
 			else if(vPosY < 0){
-				stepsCounterY = -1;
+				stepsCounterY = 1;
 			}
 			else if(vPosX > 0){
 				stepsCounterX = -1;
@@ -281,13 +287,13 @@ void cwCicleInterpolation(){
 			stepsCounterX = 1;
 		}
 		else if((vPosX > 0) && (vPosY < 0)){//2 квадрант
-			stepsCounterY = 1;
+			stepsCounterY = -1;
 		}
 		else if((vPosX < 0) && (vPosY < 0)){//3 квадрант
 			stepsCounterX = -1;
 		}
 		else if((vPosX < 0) && (vPosY > 0)){//4 квадрант
-			stepsCounterY = -1;
+			stepsCounterY = 1;
 		}
 		else{
 			if(vPosY > 0){
@@ -297,57 +303,79 @@ void cwCicleInterpolation(){
 				stepsCounterX = -1;
 			}
 			else if(vPosX > 0){
-				stepsCounterY = 1;
+				stepsCounterY = -1;
 			}
 			else if(vPosX < 0){
-				stepsCounterY = -1;
+				stepsCounterY = 1;
 			}
 		}
 	}
 
 	vPosX+=stepsCounterX;
-	vPosY-=stepsCounterY;
+	vPosY+=stepsCounterY;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void ccwCicleInterpolation(){
-	int offsetX = zeroPointX - positionX + currentComand.R;//доворачиваеем систему координат, чтобы начальная точка лежала на оси X
-	int offsetY = zeroPointY - positionY;
+	int F = ((vPosX * vPosX) + (vPosY * vPosY)) - (currentComand.R * currentComand.R);//оценочная функция (радиус всегда положительный)
+																			//контролируется на этапе парсинга
+		if(F >= 0){//если на окружности или за ней
 
-	int absOffsetX = abs(offsetX);
-	int absOffsetY = abs(offsetY);
-	int F = ((absOffsetX*absOffsetX) + (absOffsetY*absOffsetY)) - (currentComand.R * currentComand.R);//оценочная функция (радиус всегда положительный)
-																									//контролируется на этапе парсинга
+			if((vPosX > 0) && (vPosY > 0)){//1 квадрант
+				stepsCounterX = -1;
+			}
+			else if((vPosX > 0) && (vPosY < 0)){//2 квадрант
+				stepsCounterY = 1;
+			}
+			else if((vPosX < 0) && (vPosY < 0)){//3 квадрант
+				stepsCounterX = 1;
+			}
+			else if((vPosX < 0) && (vPosY > 0)){//4 квадрант
+				stepsCounterY = -1;
+			}
+			else{
+				if(vPosY > 0){
+					stepsCounterY = -1;
+				}
+				else if(vPosY < 0){
+					stepsCounterY = 1;
+				}
+				else if(vPosX > 0){
+					stepsCounterX = -1;
+				}
+				else if(vPosX < 0){
+					stepsCounterX = 1;
+				}
+			}
+		}
+		else if(F < 0){//если внутри окружности
+			if((vPosX > 0) && (vPosY > 0)){//1 квадрант
+				stepsCounterY = 1;
+			}
+			else if((vPosX > 0) && (vPosY < 0)){//2 квадрант
+				stepsCounterX = 1;
+			}
+			else if((vPosX < 0) && (vPosY < 0)){//3 квадрант
+				stepsCounterY = -1;
+			}
+			else if((vPosX < 0) && (vPosY > 0)){//4 квадрант
+				stepsCounterX = -1;
+			}
+			else{
+				if(vPosY > 0){
+					stepsCounterX = -1;
+				}
+				else if(vPosY < 0){
+					stepsCounterX = 1;
+				}
+				else if(vPosX > 0){
+					stepsCounterY = 1;
+				}
+				else if(vPosX < 0){
+					stepsCounterY = -1;
+				}
+			}
+		}
 
-	if((offsetX > 0) && (offsetY > 0)){//1 квадрант
-		if(F >= 0){
-			stepsCounterX = -1;//шаг влево
-		}
-		else{
-			stepsCounterY = 1;//шаг вверх
-		}
-	}
-	else if((offsetX > 0) && (offsetY < 0)){//2 квадрант
-		if(F >= 0){
-			stepsCounterX = 1;//шаг вправо
-		}
-		else{
-			stepsCounterY = 1;//шаг вверх
-		}
-	}
-	else if((offsetX < 0) && (offsetY > 0)){//3 квадрант
-		if(F >= 0){
-			stepsCounterX = 1;//шаг вправо
-		}
-		else{
-			stepsCounterY = 1;//шаг вниз
-		}
-	}
-	else if((offsetX < 0) && (offsetY > 0)){//4 квадрант
-		if(F >= 0){
-			stepsCounterX = -1;//шаг влево
-		}
-		else{
-			stepsCounterY = -1;//шаг вниз
-		}
-	}
+		vPosX+=stepsCounterX;
+		vPosY+=stepsCounterY;
 }

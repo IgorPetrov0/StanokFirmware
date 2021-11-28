@@ -36,6 +36,8 @@ void parseGCode(char *array, char len){
 	comand.F=0;
 	comand.R=0;
 	comand.valid=0;
+	comand.I=0;
+	comand.J=0;
 
 	char ok=0;
 	float result=0;
@@ -102,26 +104,30 @@ void parseGCode(char *array, char len){
 			comand.valid |= (1<<4);
 		}
 	}
-
-	//читаем I
-	pos = findInString(array,'I',len);
-	if(pos!=-1){
-		result = stringToInt(&array[pos]+1,len-pos,&ok);
-		if(ok!=0){
-			comand.I = result/10;
-			comand.valid |= (1<<5);
+	else{
+		//читаем I
+		pos = findInString(array,'I',len);
+		if(pos!=-1){
+			result = stringToInt(&array[pos]+1,len-pos,&ok);
+			if(ok!=0){
+				comand.I = result/10;
+				comand.valid |= (1<<5);
+			}
 		}
+
+		//читаем J
+		pos = findInString(array,'J',len);
+		if(pos!=-1){
+			result = stringToInt(&array[pos]+1,len-pos,&ok);
+			if(ok!=0){
+				comand.J = result/10;
+				comand.valid |= (1<<6);
+			}
+		}
+		comand.R=abs(sqrt(comand.I*comand.I + comand.J*comand.J));
 	}
 
-	//читаем J
-	pos = findInString(array,'J',len);
-	if(pos!=-1){
-		result = stringToInt(&array[pos]+1,len-pos,&ok);
-		if(ok!=0){
-			comand.J = result/10;
-			comand.valid |= (1<<6);
-		}
-	}
+
 
 
 
