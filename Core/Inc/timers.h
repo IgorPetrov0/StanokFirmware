@@ -37,6 +37,9 @@ extern unsigned int timerDivider;
 extern TIM_HandleTypeDef htim2;
 extern void calcInterpolation();
 
+
+int counter;
+
 void moveDirX();
 void moveDirY();
 void moveDirZ();

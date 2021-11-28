@@ -24,37 +24,39 @@ void initDrives(){
 
 	lastF=0;
 
+	relCoordinates=0;//по умолчанию координаты абсолютные
+
 }
 //////////////////////////////////////////////////////////////////////////////////////
 void executeGComand(struct driversComand comand){
 
 	currentComand = comand;
 
-	if(comand.valid & (1<<3)){//если подача валидна,
-		lastF = comand.F;//то запоминаем её. В следующей команде подачи может не быть
+	if(currentComand.valid & (1<<3)){//если подача валидна,
+		lastF = currentComand.F;//то запоминаем её. В следующей команде подачи может не быть
 	}
 
 	//заполняем невалидные параметры текущими значениями
-	if(!(comand.valid & (1<<0))){
-		comand.posX = positionX;
+	if(!(currentComand.valid & (1<<0))){
+		currentComand.posX = positionX;
 	}
-	if(!(comand.valid & (1<<1))){
-		comand.posX = positionY;
+	if(!(currentComand.valid & (1<<1))){
+		currentComand.posY = positionY;
 	}
-	if(!(comand.valid & (1<<2))){
-		comand.posX = positionZ;
+	if(!(currentComand.valid & (1<<2))){
+		currentComand.posZ = positionZ;
 	}
-	if(comand.valid & (1<<5)){//если I валидна, то преобразуем ее в абсолютные координаты
-		comand.I = positionX + comand.I;
-	}
-	else{
-		comand.I = positionX;//иначе просто присваиваем позицию Х
-	}
-	if(comand.valid & (1<<6)){//если J валидна, то преобразуем ее в абсолютные координаты
-		comand.J = positionY + comand.J;
+	if(currentComand.valid & (1<<5)){//если I валидна, то преобразуем ее в абсолютные координаты
+		currentComand.I = positionX + currentComand.I;
 	}
 	else{
-		comand.J = positionY;//иначе просто присваиваем позицию Y
+		currentComand.I = positionX;//иначе просто присваиваем позицию Х
+	}
+	if(currentComand.valid & (1<<6)){//если J валидна, то преобразуем ее в абсолютные координаты
+		currentComand.J = positionY + currentComand.J;
+	}
+	else{
+		currentComand.J = positionY;//иначе просто присваиваем позицию Y
 	}
 
 	//одно прерывание таймера = 0.000 025 С
@@ -62,29 +64,32 @@ void executeGComand(struct driversComand comand){
 	float periodPerStep=1/(1/F/200);
 	timerDivider=40000/periodPerStep;
 
-	switch(comand.GCode){
+	switch(currentComand.GCode){
 		case(0):{//холостое перемещение
-
-			if(comand.valid & (1<<1)){
-				stepsCounterX = comand.posX - positionX;
+			if(relCoordinates > 0){//если координаты относительные - пересчитываем в абсолютные
+				currentComand.posX = currentComand.posX + positionX;
+				currentComand.posY = currentComand.posY + positionY;
+				currentComand.posZ = currentComand.posZ + positionZ;
 			}
+			stepsCounterX = currentComand.posX - positionX;
+			stepsCounterY = currentComand.posY - positionY;
+			stepsCounterZ = currentComand.posZ - positionZ;
 
-			if(comand.valid & (1<<2)){
-				stepsCounterY = comand.posY - positionY;
-			}
-
-			if(comand.valid & (1<<3)){
-				stepsCounterZ = comand.posZ - positionZ;
-			}
 			HAL_TIM_Base_Start_IT(&htim2);
 			break;
 		}
 		case(1):{//линейное перемещение
-			if(comand.valid & (1<<2)){//если Z валидна,
-				int difZ=positionZ-comand.posZ;//то задаем для нее количество шагов
+			if(relCoordinates > 0){//если координаты относительные - пересчитываем в абсолютные
+				currentComand.posX = currentComand.posX + positionX;
+				currentComand.posY = currentComand.posY + positionY;
+				currentComand.posZ = currentComand.posZ + positionZ;
+			}
+
+			if(currentComand.valid & (1<<2)){//если Z валидна,
+				int difZ=positionZ-currentComand.posZ;//то задаем для нее количество шагов
 				stepsCounterZ=difZ*10;
 			}
-			if((comand.valid & (1<<0)) || (comand.valid & (1<<1))){//если х или у валидны
+			if((currentComand.valid & (1<<0)) || (currentComand.valid & (1<<1))){//если х или у валидны
 					zeroPointX = positionX;
 					zeroPointY = positionY;
 					calcInterpolation();//считаем интерполяцию
@@ -92,32 +97,42 @@ void executeGComand(struct driversComand comand){
 			break;
 		}
 		case(2):{//круговая интерполяция по часовой стрелке
+			if(relCoordinates > 0){//если координаты относительные - пересчитываем в абсолютные
+				currentComand.posX = currentComand.posX + positionX;
+				currentComand.posY = currentComand.posY + positionY;
+				currentComand.posZ = currentComand.posZ + positionZ;
+			}
 			//есть два варианта команды:через радиус или через координаты центра
 			//в первом случае координатами центра считаем центр хорды
 
-			if(comand.valid & (1<<4)){//если строим через радиус
+			if(currentComand.valid & (1<<4)){//если строим через радиус
 
 			}
 			else{//если через координаты центра
 				//получаем относительные координаты начальной точки интерполятора
-				vPosX = positionX - comand.I;
-				vPosY = positionY - comand.J;
+				vPosX = positionX - currentComand.I;
+				vPosY = positionY - currentComand.J;
 			}
 
 			calcInterpolation();
 			break;
 		}
 		case(3):{//круговая интерполяция против часовой стрелки
+			if(relCoordinates > 0){//если координаты относительные - пересчитываем в абсолютные
+				currentComand.posX = currentComand.posX + positionX;
+				currentComand.posY = currentComand.posY + positionY;
+				currentComand.posZ = currentComand.posZ + positionZ;
+			}
 			//есть два варианта команды:через радиус или через координаты центра
 			//в первом случае координатами центра считаем центр хорды
 
-			if(comand.valid & (1<<4)){//если строим через радиус
+			if(currentComand.valid & (1<<4)){//если строим через радиус
 
 			}
 			else{//если через координаты центра
 				//получаем относительные координаты начальной точки интерполятора
-				vPosX = positionX - comand.I;
-				vPosY = positionY - comand.J;
+				vPosX = positionX - currentComand.I;
+				vPosY = positionY - currentComand.J;
 			}
 
 			calcInterpolation();
@@ -127,6 +142,17 @@ void executeGComand(struct driversComand comand){
 			positionX=0;
 			positionY=0;
 			positionZ=0;
+			comandExecuted();
+			break;
+		}
+		case(90):{//установка абсолютных координат
+			relCoordinates = 0;
+			comandExecuted();
+			break;
+		}
+		case(91):{//установка относительных координат
+			relCoordinates = 1;
+			comandExecuted();
 			break;
 		}
 	}
@@ -135,12 +161,14 @@ void executeGComand(struct driversComand comand){
 void calcInterpolation(){
 
 	if((positionX == currentComand.posX) && (positionY == currentComand.posY)){//если пришли в заданную позицию, то ничего не делаем
-		vPosX=0;
-		vPosY=0;
+		comandExecuted();
 		return;
 	}
 
 	switch(currentComand.GCode){
+		case(0):{
+			break;
+		}
 		case(1):{//линейное перемещение
 			lineInterpolacion();
 			break;
@@ -378,4 +406,24 @@ void ccwCicleInterpolation(){
 
 		vPosX+=stepsCounterX;
 		vPosY+=stepsCounterY;
+}
+/////////////////////////////////////////////////////////////////////////////////////
+void comandExecuted(){
+	vPosX = 0;
+	vPosY = 0;
+	counter = 0;
+	resetCurrentCommand();
+	sendFree();
+}
+//////////////////////////////////////////////////////////////////////////////////////
+void resetCurrentCommand(){
+	currentComand.F = 0;
+	currentComand.GCode = 0;
+	currentComand.I = 0;
+	currentComand.J = 0;
+	currentComand.R = 0;
+	currentComand.posX = 0;
+	currentComand.posY = 0;
+	currentComand.posZ = 0;
+	currentComand.valid = 0;
 }

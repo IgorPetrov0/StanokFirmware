@@ -8,7 +8,6 @@
 
 ////////////////////////////////////////////////////////////////////////
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	static int counter=0;
 
 	if(htim->Instance==TIM2){
 

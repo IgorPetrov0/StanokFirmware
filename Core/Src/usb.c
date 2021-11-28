@@ -53,15 +53,15 @@ unsigned short Crc16(char *pcBlock, unsigned short len){
 ////////////////////////////////////////////////////////////////////////
 void sendStatus(){
 	unsigned char size=2+sizeof(int)*3+2;//размер,тип,3 флоата,CRC
-	unsigned char dataToSend[size];
+	char dataToSend[size];
 
 	dataToSend[0]=size;
 	dataToSend[1]=MESSAGE_STATUS;
-	//отправляем позицию X. Разбираем float на char
+	//отправляем позицию X. Разбираем int на char
 	memcpy(dataToSend+2,&positionX,sizeof(int));
-	//отправляем позицию Y. Разбираем float на char
+	//отправляем позицию Y. Разбираем int на char
 	memcpy(dataToSend+2+sizeof(int),&positionY,sizeof(int));
-	//отправляем позицию X. Разбираем float на char
+	//отправляем позицию X. Разбираем int на char
 	memcpy(dataToSend+2+sizeof(int)*2,&positionZ,sizeof(int));
 
 	unsigned short crc = Crc16(dataToSend,size-2);
@@ -72,17 +72,23 @@ void sendStatus(){
 }
 /////////////////////////////////////////////////////////////////////////
 void sendAcknolege(enum messageType mess, char *array, char arrSize){
-	unsigned char size=2+sizeof(int)*3+2+arrSize;//размер,тип,3 флоата,CRC, размер массива
-	unsigned char dataToSend[size];
+	unsigned char size=2+sizeof(int)*3+2+arrSize;//размер,тип,3 инта,CRC, размер массива
+	char dataToSend[size];
 
 	dataToSend[0]=size;
 	dataToSend[1]=mess;
-	memcpy(array,dataToSend+2,arrSize);
+
+	if(array != NULL){
+		memcpy(array,dataToSend+2,arrSize);
+	}
 	unsigned short crc = Crc16(dataToSend,size-2);
 	memcpy(dataToSend+size-2,&crc,sizeof(unsigned short));
 	CDC_Transmit_FS(dataToSend,size);//отправляем ответ
 }
-
+/////////////////////////////////////////////////////////////////////////
+void sendFree(){
+	sendAcknolege(MESSAGE_ACKNOWLEDGE,NULL,0);
+}
 
 
 

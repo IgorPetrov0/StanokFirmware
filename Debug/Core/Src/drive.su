@@ -1,7 +1,9 @@
 drive.c:12:6:initDrives	4	static
-drive.c:29:6:executeGComand	32	static
-drive.c:135:6:calcInterpolation	8	static
-drive.c:163:6:executeMComand	16	static
-drive.c:183:6:lineInterpolacion	32	static
-drive.c:252:6:cwCicleInterpolation	16	static
-drive.c:318:6:ccwCicleInterpolation	16	static
+drive.c:31:6:executeGComand	32	static
+drive.c:161:6:calcInterpolation	8	static
+drive.c:191:6:executeMComand	16	static
+drive.c:211:6:lineInterpolacion	32	static
+drive.c:280:6:cwCicleInterpolation	16	static
+drive.c:346:6:ccwCicleInterpolation	16	static
+drive.c:411:6:comandExecuted	8	static
+drive.c:419:6:resetCurrentCommand	4	static

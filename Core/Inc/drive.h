@@ -12,8 +12,10 @@
 #include <math.h>
 #include "stm32f1xx_hal.h"
 
-extern TIM_HandleTypeDef htim2;
 
+extern TIM_HandleTypeDef htim2;
+extern int counter;
+extern void sendFree();
 
 
 struct driversComand{
@@ -67,6 +69,7 @@ int lastF;
 int vPosX;
 int vPosY;
 
+char relCoordinates;//>0 -относительные координаты; 0-абсолютные
 
 void initDrives();
 void executeGComand(struct driversComand comand);
@@ -75,5 +78,8 @@ void lineInterpolacion();
 void cwCicleInterpolation();
 void ccwCicleInterpolation();
 void executeMComand(struct MComand comand);
+void comandExecuted();
+void resetCurrentCommand();
+
 
 #endif /* INC_DRIVE_H_ */

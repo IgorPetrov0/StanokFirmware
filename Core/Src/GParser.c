@@ -126,12 +126,6 @@ void parseGCode(char *array, char len){
 		}
 		comand.R=abs(sqrt(comand.I*comand.I + comand.J*comand.J));
 	}
-
-
-
-
-
-
 	executeGComand(comand);
 }
 ////////////////////////////////////////////////////////////////////////

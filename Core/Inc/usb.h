@@ -15,17 +15,18 @@ extern char incomingMessageFlag;
 extern int positionX;
 extern int positionY;
 extern int positionZ;
-extern void parseCodeString(unsigned char *array, char len);
+extern void parseCodeString(char *array, char len);
 
 
 enum messageType{
     MESSAGE_STATUS,
-	MESSAGE_G_CODE
+	MESSAGE_G_CODE,
+	MESSAGE_ACKNOWLEDGE
 };
 
 
 
-unsigned char *rxBuffer;
+char *rxBuffer;
 char sizeOfMessage;
 
 
@@ -35,6 +36,8 @@ void readMessage();
 unsigned short Crc16(char *pcBlock, unsigned short len);
 void sendStatus();
 void sendAcknolege(enum messageType mess, char *array, char arrSize);
+void sendFree();
+
 
 
 #endif /* INC_USB_H_ */
