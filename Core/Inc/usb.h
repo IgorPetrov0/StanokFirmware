@@ -10,6 +10,12 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include "stm32f1xx_hal.h"
+
+
+#define swX GPIOA, GPIO_PIN_0
+#define swY GPIOA, GPIO_PIN_1
+#define swZ GPIOA, GPIO_PIN_2
 
 extern char incomingMessageFlag;
 extern int positionX;

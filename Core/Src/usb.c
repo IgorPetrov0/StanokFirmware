@@ -52,8 +52,11 @@ unsigned short Crc16(char *pcBlock, unsigned short len){
 }
 ////////////////////////////////////////////////////////////////////////
 void sendStatus(){
-	unsigned char size=2+sizeof(int)*3+2;//размер,тип,3 флоата,CRC
+	unsigned char size=2+sizeof(int)*3+3+2;//размер,тип,3 флоата,3 char, CRC
 	char dataToSend[size];
+	for(int n = 0; n != size; n++){
+		dataToSend[n]=0;
+	}
 
 	dataToSend[0]=size;
 	dataToSend[1]=MESSAGE_STATUS;
@@ -63,7 +66,15 @@ void sendStatus(){
 	memcpy(dataToSend+2+sizeof(int),&positionY,sizeof(int));
 	//отправляем позицию X. Разбираем int на char
 	memcpy(dataToSend+2+sizeof(int)*2,&positionZ,sizeof(int));
-
+	if(HAL_GPIO_ReadPin(swX) == GPIO_PIN_SET){
+		dataToSend[14]=1;
+	}
+	if(HAL_GPIO_ReadPin(swY) == GPIO_PIN_SET){
+		dataToSend[15]=1;
+	}
+	if(HAL_GPIO_ReadPin(swZ) == GPIO_PIN_SET){
+		dataToSend[16]=1;
+	}
 	unsigned short crc = Crc16(dataToSend,size-2);
 	memcpy(dataToSend+size-2,&crc,sizeof(unsigned short));
 

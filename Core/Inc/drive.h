@@ -51,6 +51,11 @@ struct MComand{
 #define Z_D GPIOB, GPIO_PIN_7
 
 
+#define swX GPIOA, GPIO_PIN_0
+#define swY GPIOA, GPIO_PIN_1
+#define swZ GPIOA, GPIO_PIN_2
+
+
 int positionX;
 int positionY;
 int positionZ;
@@ -80,6 +85,7 @@ void ccwCicleInterpolation();
 void executeMComand(struct MComand comand);
 void comandExecuted();
 void resetCurrentCommand();
+void moveToZero();
 
 
 #endif /* INC_DRIVE_H_ */

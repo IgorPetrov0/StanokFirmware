@@ -33,14 +33,14 @@ void moveDirX(){
 
 	if(stepsCounterX!=0){
 		if(stepsCounterX>0){
-			stepX++;
-			if(stepX == 5)stepX = 1;
+			stepX--;
+			if(stepX == 0)stepX = 4;
 			positionX+=1;
 			stepsCounterX--;
 		}
 		else if(stepsCounterX<0){
-			stepX--;
-			if(stepX==0)stepX = 4;
+			stepX++;
+			if(stepX== 5)stepX = 1;
 			positionX-=1;
 			stepsCounterX++;
 		}
@@ -131,14 +131,14 @@ void moveDirZ(){
 
 	if(stepsCounterZ!=0){
 			if(stepsCounterZ>0){
-				stepZ++;
-				if(stepZ == 5)stepZ = 1;
+				stepZ--;
+				if(stepZ == 0)stepZ = 4;
 				positionZ+=1;
 				stepsCounterZ--;
 			}
 			else if(stepsCounterZ<0){
-				stepZ--;
-				if(stepZ == 0)stepZ = 4;
+				stepZ++;
+				if(stepZ == 5)stepZ = 1;
 				positionZ-=1;
 				stepsCounterZ++;
 			}
