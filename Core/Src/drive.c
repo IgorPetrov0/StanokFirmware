@@ -94,8 +94,8 @@ void executeGComand(struct driversComand comand){
 			if((currentComand.valid & (1<<0)) || (currentComand.valid & (1<<1))){//если х или у валидны
 					zeroPointX = positionX;
 					zeroPointY = positionY;
-					calcInterpolation();//считаем интерполяцию
 			}
+			calcInterpolation();//считаем интерполяцию
 			break;
 		}
 		case(2):{//круговая интерполяция по часовой стрелке
@@ -217,7 +217,9 @@ void executeMComand(struct MComand comand){
 }
 ////////////////////////////////////////////////////////////////////////////////////
 void lineInterpolacion(){
-	if((positionX == currentComand.posX) && (positionY == currentComand.posY)){//если пришли в заданную позицию, то ничего не делаем
+	if((positionX == currentComand.posX) &&
+			(positionY == currentComand.posY) &&
+			(positionZ == currentComand.posZ)){//если пришли в заданную позицию, то ничего не делаем
 		comandExecuted();
 		return;
 	}

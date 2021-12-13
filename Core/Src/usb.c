@@ -30,7 +30,7 @@ void readMessage(){
 			}
 			case(MESSAGE_G_CODE):{
 				parseCodeString(rxBuffer+2,sizeOfMessage-4);
-				sendAcknolege(MESSAGE_G_CODE,rxBuffer+2,sizeOfMessage-4);
+				//sendAcknolege(MESSAGE_G_CODE,rxBuffer+2,sizeOfMessage-4);
 				break;
 			}
 		}

@@ -3,8 +3,8 @@ drive.c:31:6:executeGComand	32	static
 drive.c:167:6:calcInterpolation	8	static
 drive.c:199:6:executeMComand	16	static
 drive.c:219:6:lineInterpolacion	32	static
-drive.c:294:6:cwCicleInterpolation	16	static
-drive.c:366:6:ccwCicleInterpolation	16	static
-drive.c:438:6:moveToZero	8	static
-drive.c:462:6:comandExecuted	8	static
-drive.c:470:6:resetCurrentCommand	4	static
+drive.c:296:6:cwCicleInterpolation	16	static
+drive.c:368:6:ccwCicleInterpolation	16	static
+drive.c:440:6:moveToZero	8	static
+drive.c:464:6:comandExecuted	8	static
+drive.c:472:6:resetCurrentCommand	4	static
