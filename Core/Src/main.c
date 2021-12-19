@@ -391,10 +391,10 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, X_A_Pin|X_B_Pin|X_C_Pin|X_D_Pin 
-                          |Z_C_Pin|Z_D_Pin|Y_D_Pin|Z_A_Pin, GPIO_PIN_SET);
+                          |Z_C_Pin|Z_D_Pin|Y_D_Pin|Z_A_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, Y_A_Pin|Y_B_Pin|Y_C_Pin|Z_B_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOA, Y_A_Pin|Y_B_Pin|Y_C_Pin|Z_B_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;

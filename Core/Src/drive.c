@@ -211,6 +211,7 @@ void executeMComand(struct MComand comand){
 			HAL_GPIO_WritePin (Z_B,GPIO_PIN_RESET);
 			HAL_GPIO_WritePin (Z_D,GPIO_PIN_RESET);
 			HAL_GPIO_WritePin (Z_C,GPIO_PIN_RESET);
+			comandExecuted();
 			break;
 		}
 	}
@@ -232,10 +233,10 @@ void lineInterpolacion(){
 	int F = (abs(offsetY) * abs(vectorX) - (abs(offsetX) * abs(vectorY)));//оценочная функция
 	if(F == 0){
 		if(vectorX > 0){
-			stepsCounterX = -1;
+			stepsCounterX = 1;
 		}
 		else if(vectorX < 0){
-			stepsCounterX = 1;
+			stepsCounterX = -1;
 		}
 		else{
 			stepsCounterX = 0;
@@ -252,10 +253,10 @@ void lineInterpolacion(){
 	}
 	else if(F > 0){
 		if(vectorX > 0){
-			stepsCounterX = -1;
+			stepsCounterX = 1;
 		}
 		else if(vectorX < 0){
-			stepsCounterX = 1;
+			stepsCounterX = -1;
 		}
 		else{
 			stepsCounterX = 0;
@@ -280,10 +281,10 @@ void lineInterpolacion(){
 		else{
 			stepsCounterY = 0;
 			if(vectorX > 0){
-				stepsCounterX = -1;
+				stepsCounterX = 1;
 			}
 			else if(vectorX < 0){
-				stepsCounterX = 1;
+				stepsCounterX = -1;
 			}
 			else{
 				stepsCounterX = 0;
@@ -307,13 +308,13 @@ void cwCicleInterpolation(){
 			stepsCounterY = -1;
 		}
 		else if((vPosX > 0) && (vPosY < 0)){//2 квадрант
-			stepsCounterX = 1;
+			stepsCounterX = -1;
 		}
 		else if((vPosX < 0) && (vPosY < 0)){//3 квадрант
 			stepsCounterY = 1;
 		}
 		else if((vPosX < 0) && (vPosY > 0)){//4 квадрант
-			stepsCounterX = -1;
+			stepsCounterX = 1;
 		}
 		else{
 			if(vPosY > 0){
@@ -323,32 +324,32 @@ void cwCicleInterpolation(){
 				stepsCounterY = 1;
 			}
 			else if(vPosX > 0){
-				stepsCounterX = 1;
+				stepsCounterX = -1;
 			}
 			else if(vPosX < 0){
-				stepsCounterX = -1;
+				stepsCounterX = 1;
 			}
 		}
 	}
 	else if(F < 0){//если внутри окружности
 		if((vPosX > 0) && (vPosY > 0)){//1 квадрант
-			stepsCounterX = -1;
+			stepsCounterX = 1;
 		}
 		else if((vPosX > 0) && (vPosY < 0)){//2 квадрант
 			stepsCounterY = -1;
 		}
 		else if((vPosX < 0) && (vPosY < 0)){//3 квадрант
-			stepsCounterX = 1;
+			stepsCounterX = -1;
 		}
 		else if((vPosX < 0) && (vPosY > 0)){//4 квадрант
 			stepsCounterY = 1;
 		}
 		else{
 			if(vPosY > 0){
-				stepsCounterX = -1;
+				stepsCounterX = 1;
 			}
 			else if(vPosY < 0){
-				stepsCounterX = 1;
+				stepsCounterX = -1;
 			}
 			else if(vPosX > 0){
 				stepsCounterY = -1;
@@ -376,13 +377,13 @@ void ccwCicleInterpolation(){
 		if(F >= 0){//если на окружности или за ней
 
 			if((vPosX > 0) && (vPosY > 0)){//1 квадрант
-				stepsCounterX = 1;
+				stepsCounterX = -1;
 			}
 			else if((vPosX > 0) && (vPosY < 0)){//2 квадрант
 				stepsCounterY = 1;
 			}
 			else if((vPosX < 0) && (vPosY < 0)){//3 квадрант
-				stepsCounterX = -1;
+				stepsCounterX = 1;
 			}
 			else if((vPosX < 0) && (vPosY > 0)){//4 квадрант
 				stepsCounterY = -1;
@@ -395,10 +396,10 @@ void ccwCicleInterpolation(){
 					stepsCounterY = 1;
 				}
 				else if(vPosX > 0){
-					stepsCounterX = 1;
+					stepsCounterX = -1;
 				}
 				else if(vPosX < 0){
-					stepsCounterX = -1;
+					stepsCounterX = 1;
 				}
 			}
 		}
@@ -407,20 +408,20 @@ void ccwCicleInterpolation(){
 				stepsCounterY = 1;
 			}
 			else if((vPosX > 0) && (vPosY < 0)){//2 квадрант
-				stepsCounterX = -1;
+				stepsCounterX = 1;
 			}
 			else if((vPosX < 0) && (vPosY < 0)){//3 квадрант
 				stepsCounterY = -1;
 			}
 			else if((vPosX < 0) && (vPosY > 0)){//4 квадрант
-				stepsCounterX = 1;
+				stepsCounterX = -1;
 			}
 			else{
 				if(vPosY > 0){
-					stepsCounterX = 1;
+					stepsCounterX = -1;
 				}
 				else if(vPosY < 0){
-					stepsCounterX = -1;
+					stepsCounterX = 1;
 				}
 				else if(vPosX > 0){
 					stepsCounterY = 1;

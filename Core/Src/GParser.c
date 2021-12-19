@@ -11,11 +11,11 @@
 void parseCodeString(char *array, char len){
 	switch(array[2]){
 		case('G'):{
-			parseGCode(array+3,len-1);
+			parseGCode(array+3,len-3);//-3 - это символ G в начале и CRC в конце
 			break;
 		}
 		case('M'):{
-			parseMCode(array+3,len-1);
+			parseMCode(array+3,len-3);//-3 - это символ G в начале и CRC в конце
 			break;
 		}
 		default:{

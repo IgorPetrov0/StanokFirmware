@@ -25,9 +25,11 @@ extern void parseCodeString(char *array, char len);
 
 
 enum messageType{
-    MESSAGE_STATUS,
+	MESSAGE_STATUS,
 	MESSAGE_G_CODE,
-	MESSAGE_ACKNOWLEDGE
+	MESSAGE_COMPLETE,
+	MESSAGE_ACKNOWLEDGE,
+	MESSAGE_ERROR
 };
 
 
@@ -40,7 +42,7 @@ char sizeOfMessage;
 void usbInit();
 void readMessage();
 unsigned short Crc16(char *pcBlock, unsigned short len);
-void sendStatus();
+void status(char *array);
 void sendAcknolege(enum messageType mess, char *array, char arrSize);
 void sendFree();
 
